@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/influxdata/toml"
@@ -46,6 +47,7 @@ type config struct {
 	global
 	LogLevel     log.Level `help:"Log level, one of panic, fatal, error, warn or warning, info, debug, trace"`
 	SampleConfig bool      `opts:"group=Configuration" help:"If set creates a sample config file that can be used later"`
+	PidFile      []string  `opts:"group=Configuration" help:"Write a PID file, if set"`
 	Config       string    `opts:"group=Soundtouch" help:"configuration file to load"`
 }
 
@@ -65,6 +67,8 @@ type tomlConfig struct {
 }
 
 func main() {
+	defer tearDown()
+
 	var tConfig tomlConfig
 	conf = config{
 		global: global{
@@ -102,6 +106,7 @@ func main() {
 		panic(err)
 	}
 	conf.global.NoOfSoundtouchSystems = tConfig.Global.NoOfSoundtouchSystems
+	conf.global.Interface = tConfig.Global.Interface
 
 	pl := initPlugins(tConfig, false)
 
@@ -109,6 +114,10 @@ func main() {
 		InterfaceName: conf.global.Interface,
 		NoOfSystems:   conf.global.NoOfSoundtouchSystems,
 		Plugins:       pl,
+	}
+
+	if conf.PidFile != nil {
+		createPIDFile(conf.PidFile)
 	}
 
 	// SearchDevices does not closes the channel
@@ -133,6 +142,30 @@ func printSampleConfig(pl []soundtouch.Plugin) bool {
 	return true
 }
 
+func createPIDFile(pidFile []string) {
+	if len(pidFile) < 1 {
+		return
+	}
+
+	f, err := os.Create(pidFile[0])
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+	_, err = f.WriteString(strconv.Itoa(os.Getpid()))
+	if err != nil {
+		log.Errorln(err)
+		f.Close()
+		return
+	}
+	err = f.Close()
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+	log.Debugf("PID-file %s successfully created", pidFile[0])
+}
+
 func initPlugins(tConfig tomlConfig, mock bool) []soundtouch.Plugin {
 	pl := []soundtouch.Plugin{}
 
@@ -144,4 +177,19 @@ func initPlugins(tConfig tomlConfig, mock bool) []soundtouch.Plugin {
 	pl = append(pl, autooff.NewObserver(tConfig.AutoOff))
 	pl = append(pl, telegram.NewTelegramLogger(tConfig.Telegram))
 	return pl
+}
+
+func tearDown() {
+	if len(conf.PidFile) < 1 {
+		log.Debugln("No PID file to delete")
+		return
+	}
+
+	err := os.Remove(conf.PidFile[0])
+
+	if err != nil {
+		log.Errorln(err)
+		return
+	}
+	log.Debugf("File %s successfully deleted", conf.PidFile[0])
 }
