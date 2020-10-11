@@ -16,9 +16,9 @@ const sampleConfig = `
 # [autoOff]
 
 ## speakers that trigger an autooff 
-# 	[autooff.Wohnzimmer]
+# 	[autoOff.Wohnzimmer]
 #			thenOff = ["Kueche", "Schrank"]
-#		[autooff.Schlafzimmer]
+#	[autoOff.Schlafzimmer]
 #			thenOff = ["Office"]
 
 `
