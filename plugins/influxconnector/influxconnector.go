@@ -54,6 +54,7 @@ type InfluxDB struct {
 	Config
 	Plugin    soundtouch.PluginFunc
 	suspended bool
+	noOfFails int
 }
 
 var influxDB = soundtouch.InfluxDB{
@@ -63,6 +64,8 @@ var influxDB = soundtouch.InfluxDB{
 	},
 	Database: "soundtouch",
 }
+
+const maxNoOfFails = 20
 
 // NewLogger creates a new Logger plugin with the configuration
 func NewLogger(config Config) (d *InfluxDB) {
@@ -107,6 +110,10 @@ func (d *InfluxDB) Enable() { d.suspended = false }
 
 // Execute runs the plugin with the given parameter
 func (d *InfluxDB) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
+	if d.suspended {
+		return
+	}
+
 	mLogger := log.WithFields(log.Fields{
 		"Plugin":        name,
 		"Speaker":       speaker.Name(),
@@ -126,8 +133,16 @@ func (d *InfluxDB) Execute(pluginName string, update soundtouch.Update, speaker 
 	if !(d.Config.DryRun) && v != "" {
 		result, err := influxDB.SetData("write", []byte(v))
 		if err != nil {
-			mLogger.Errorf("failed")
+			if d.noOfFails >= maxNoOfFails {
+				d.suspended = true
+				mLogger.Errorf("Failed %v times to connect. Disabling plugin.", d.noOfFails)
+			} else {
+				d.noOfFails = d.noOfFails + 1
+				mLogger.Errorf("failed. No of fails %v", d.noOfFails)
+				return
+			}
 		}
+		d.noOfFails = 0
 		mLogger.Debugf("succeeded: %v", string(result))
 
 	} else if v != "" {
