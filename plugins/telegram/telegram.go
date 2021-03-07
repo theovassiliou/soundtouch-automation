@@ -28,6 +28,7 @@ const sampleConfig = `
 ## Telegram API Key
 # apiKey ="x:y"
 # authorizedSenders = ["999999", "888888"]
+# authKey = "secrectKey" 
 `
 
 const description = "Logs all update messages to telegram"
@@ -40,7 +41,7 @@ type Config struct {
 	Speakers         []string `toml:"speakers"`
 	IgnoreMessages   []string `toml:"ignore_messages"`
 	APIKey           string   `toml:"apiKey"`
-	AuthorizedSender []string `toml:"authorizedSender"`
+	AuthorizedSender []string `toml:"authorizedSenders"`
 	AuthKey          string   `toml:"authKey"`
 }
 
@@ -137,7 +138,7 @@ func NewTelegramLogger(config Config) (d *Bot) {
 	})
 
 	b.Handle("/hello", func(m *tb.Message) {
-		b.Send(m.Sender, fmt.Sprintf("Hello %v!", m.Sender.FirstName), menu)
+		b.Send(m.Sender, fmt.Sprintf("Hello %v(%v)!", m.Sender.FirstName, m.Sender.ID), menu)
 	})
 	s, _ := strconv.Atoi(d.Config.AuthorizedSender[0])
 	user := &tb.User{ID: s}

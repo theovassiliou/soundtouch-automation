@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -37,21 +38,25 @@ func (d *Bot) status(m *tb.Message) {
 	} else {
 		for _, sName := range speakers {
 			speaker := soundtouch.GetSpeakerByName(sName)
-			fmt.Fprintf(&b, "Device %s-%s with IP %s\n", speaker.Name(), speaker.DeviceID(), speaker.IP)
-			fmt.Fprintf(&b, " isPoweredOn(): %v\n", speaker.IsPoweredOn())
-			fmt.Fprintf(&b, " isAlive(): %v\n", speaker.IsAlive())
-			zone, _ := speaker.GetZone()
+			if speaker != nil {
+				fmt.Fprintf(&b, "Device %s-%s with IP %s\n", speaker.Name(), speaker.DeviceID(), speaker.IP)
+				fmt.Fprintf(&b, " isPoweredOn(): %v\n", speaker.IsPoweredOn())
+				fmt.Fprintf(&b, " isAlive(): %v\n", speaker.IsAlive())
+				zone, _ := speaker.GetZone()
 
-			fmt.Fprintf(&b, " isMaster(): %v\n", speaker.IsMaster())
-			fmt.Fprintln(&b, "  zone.Master: ", zone.Master)
-			fmt.Fprintln(&b, "  zone.SenderIPAddress: ", zone.SenderIPAddress)
-			fmt.Fprintln(&b, "  zone.SenderIsMaster: ", zone.SenderIsMaster)
-			fmt.Fprintln(&b, "  zone.Members: ", zone.Members)
+				fmt.Fprintf(&b, " isMaster(): %v\n", speaker.IsMaster())
+				fmt.Fprintln(&b, "  zone.Master: ", zone.Master)
+				fmt.Fprintln(&b, "  zone.SenderIPAddress: ", zone.SenderIPAddress)
+				fmt.Fprintln(&b, "  zone.SenderIsMaster: ", zone.SenderIsMaster)
+				fmt.Fprintln(&b, "  zone.Members: ", zone.Members)
 
-			if speaker.IsAlive() {
-				np, _ := speaker.NowPlaying()
-				np.Raw = []byte{}
-				fmt.Fprintf(&b, "Now Playing: %#v", np)
+				if speaker.IsAlive() {
+					np, _ := speaker.NowPlaying()
+					np.Raw = []byte{}
+					fmt.Fprintf(&b, "Now Playing: %#v", np)
+				}
+			} else {
+				fmt.Fprintf(&b, "Could not find speaker %v", sName)
 			}
 		}
 	}
@@ -60,6 +65,13 @@ func (d *Bot) status(m *tb.Message) {
 
 // /authorize [authkey]
 func (d *Bot) authorize(m *tb.Message) {
+
+	mLogger := log.WithFields(log.Fields{
+		"Plugin": "TelegramBot",
+		"Handle": "authorize/",
+	})
+
+	mLogger.Debugf("The bot: %v", d)
 	authKey := d.Config.AuthKey
 
 	if authKey == "" {
