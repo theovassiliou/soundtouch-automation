@@ -89,6 +89,9 @@ func (d *Collector) Disable() { d.suspended = true }
 // Enable temporarely the execution of the plugin
 func (d *Collector) Enable() { d.suspended = false }
 
+// IsEnabled returns true if the plugin is not suspened
+func (d *Collector) IsEnabled() bool { return !d.suspended }
+
 // Execute runs the plugin with the given parameter
 func (d *Collector) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
 	if !(update.Is("NowPlaying") || update.Is("Volume")) {

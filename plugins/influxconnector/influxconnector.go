@@ -79,6 +79,9 @@ func NewLogger(config Config) (d *InfluxDB) {
 	v, err := url.Parse(config.InfluxURL)
 	if err != nil {
 		mLogger.Infof("Not a valid URL: %v", config.InfluxURL)
+		mLogger.Infof("Suspending plugin")
+		d.suspended = true
+		return d
 	}
 
 	influxDB.BaseHTTPURL = *v
@@ -107,6 +110,9 @@ func (d *InfluxDB) Disable() { d.suspended = true }
 
 // Enable temporarely the execution of the plugin
 func (d *InfluxDB) Enable() { d.suspended = false }
+
+// IsEnabled returns true if the plugin is not suspened
+func (d *InfluxDB) IsEnabled() bool { return !d.suspended }
 
 // Execute runs the plugin with the given parameter
 func (d *InfluxDB) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {

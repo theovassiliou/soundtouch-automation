@@ -57,8 +57,14 @@ type Bot struct {
 
 // NewTelegramLogger creates a new Logger plugin with the configuration
 func NewTelegramLogger(config Config) (d *Bot) {
+	mLogger := log.WithFields(log.Fields{
+		"Plugin": name,
+	})
+
 	d = &Bot{}
 	if config.APIKey == "" {
+		mLogger.Debug("No APIKey provided. Suspending plugin.")
+		d.suspended = true
 		return d
 	}
 
@@ -133,10 +139,6 @@ func NewTelegramLogger(config Config) (d *Bot) {
 		d.authorize(m)
 	})
 
-	mLogger := log.WithFields(log.Fields{
-		"Plugin": name,
-	})
-
 	b.Handle("/hello", func(m *tb.Message) {
 		b.Send(m.Sender, fmt.Sprintf("Hello %v(%v)!", m.Sender.FirstName, m.Sender.ID), menu)
 	})
@@ -178,8 +180,14 @@ func (d *Bot) Disable() { d.suspended = true }
 // Enable temporarely the execution of the plugin
 func (d *Bot) Enable() { d.suspended = false }
 
+// IsEnabled returns true if the plugin is not suspened
+func (d *Bot) IsEnabled() bool { return !d.suspended }
+
 // Execute runs the plugin with the given parameter
 func (d *Bot) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
+	if !d.IsEnabled() {
+		return
+	}
 	if len(d.IgnoreMessages) > 0 && sliceContains(reflect.TypeOf(update.Value).Name(), d.IgnoreMessages) {
 		return
 	}

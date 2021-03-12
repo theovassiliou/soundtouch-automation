@@ -70,6 +70,9 @@ func (d *MagicZone) Disable() { d.suspended = true }
 // Enable temporarely the execution of the plugin
 func (d *MagicZone) Enable() { d.suspended = false }
 
+// IsEnabled returns true if the plugin is not suspened
+func (d *MagicZone) IsEnabled() bool { return !d.suspended }
+
 // Execute runs the plugin with the given parameter
 func (d *MagicZone) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
 	if !(update.Is("NowPlaying")) {

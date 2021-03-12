@@ -95,6 +95,9 @@ func (vb *VolumeButler) Disable() { vb.suspended = true }
 // Enable temporarely the execution of the plugin
 func (vb *VolumeButler) Enable() { vb.suspended = false }
 
+// IsEnabled returns true if the plugin is not suspened
+func (vb *VolumeButler) IsEnabled() bool { return !vb.suspended }
+
 // Execute runs the plugin with the given parameter
 func (vb *VolumeButler) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
 

@@ -77,6 +77,9 @@ func (d *Logger) Disable() { d.suspended = true }
 // Enable temporarely the execution of the plugin
 func (d *Logger) Enable() { d.suspended = false }
 
+// IsEnabled returns true if the plugin is not suspened
+func (d *Logger) IsEnabled() bool { return !d.suspended }
+
 // Execute runs the plugin with the given parameter
 func (d *Logger) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
 	if len(d.IgnoreMessages) > 0 && sliceContains(reflect.TypeOf(update.Value).Name(), d.IgnoreMessages) {
