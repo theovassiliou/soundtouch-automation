@@ -10,10 +10,15 @@ func main() {
 
 	for i, intf := range ifs {
 
-		fmt.Println(i, intf.Name)
+		fmt.Print(i, " ", intf.Name, " ")
 		a, _ := intf.Addrs()
-		for _, n := range a {
-			fmt.Println(n.String())
+		if len(a) > 0 {
+			for _, n := range a {
+				fmt.Println(n.String())
+			}
+
+		} else {
+			fmt.Println()
 		}
 	}
 
