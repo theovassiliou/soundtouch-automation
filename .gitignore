@@ -1,2 +1,5 @@
 workspace.code-workspace
 config.toml
+episode.db/*
+soundtouch-master
+.vscode/launch.json
