@@ -75,6 +75,10 @@ func NewLogger(config Config) (d *InfluxDB) {
 	mLogger := log.WithFields(log.Fields{
 		"Plugin": name,
 	})
+	if config.InfluxURL == "" {
+		d.suspended = true
+		return d
+	}
 
 	v, err := url.Parse(config.InfluxURL)
 	if err != nil {
