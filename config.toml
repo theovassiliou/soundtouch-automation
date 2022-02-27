@@ -13,7 +13,7 @@
 
 # Global section contains global, plugin independent parameters
 [global]
-interface="eth0"
+interface="en0"
 no_of_soundtouch_systems=7
 
 
@@ -30,24 +30,24 @@ ignore_messages = ["ConnectionStateUpdated"]
 
 
 ## Enabling the episodeCollector plugin
-# [episodeCollector]
+[episodeCollector]
 
 ## speakers for which episodes should be stores. If empty, all 
-# speakers = ["Office", "Kitchen"]
+speakers = ["Schrank"]
 
 ## For which artists to collect the episodes
 ## all if empty
-# artists = ["Drei Frageezeichen","John Sinclair"] 
+artists = ["Drei Fragezeichen","John Sinclair"] 
 
 ## database contains the directory name for the episodes database
-# database = "episode.db"
+database = "episode.db"
 
 
 ## Enabling the magicZone plugin
-[magicZone]
+# [magicZone]
 
 ## ordered list of speakers that should be grouped in zones. All if empty.
-speakers = ["Office", "Küche", "Badezimmer", "Schrank"]
+# speakers = ["Office", "Küche", "Badezimmer", "Schrank"]
 
 
 # [influxDB]
@@ -87,10 +87,10 @@ speakers = ["Office", "Küche", "Badezimmer", "Schrank"]
 # [autoOff]
 
 ## speakers that trigger an autooff 
- 	[autoOff.Wohnzimmer]
-			thenOff = ["Küche", "Schrank"]
-	[autoOff.Schlafzimmer]
-		thenOff = ["Office"]
+# 	[autoOff.Soundtouch]
+#			thenOff = ["Kueche", "Schrank"]
+#	[autoOff.Schlafzimmer]
+#		thenOff = ["Office"]
 
 
 ## Enabling logger plugin

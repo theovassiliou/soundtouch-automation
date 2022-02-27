@@ -58,13 +58,13 @@ type global struct {
 }
 type tomlConfig struct {
 	Global           global
-	Logger           logger.Config           `toml:"logger"`
-	EpisodeCollector episodecollector.Config `toml:"episodeCollector"`
-	MagicZone        magiczone.Config        `toml:"magicZone"`
-	InfluxDB         influxconnector.Config  `toml:"influxDB"`
-	VolumeButler     volumebutler.Config     `toml:"volumeButler"`
-	AutoOff          autooff.Config          `toml:"autoOff"`
-	Telegram         telegram.Config         `toml:"telegram"`
+	Logger           *logger.Config           `toml:"logger"`
+	EpisodeCollector *episodecollector.Config `toml:"episodeCollector"`
+	MagicZone        *magiczone.Config        `toml:"magicZone"`
+	InfluxDB         *influxconnector.Config  `toml:"influxDB"`
+	VolumeButler     *volumebutler.Config     `toml:"volumeButler"`
+	AutoOff          *autooff.Config          `toml:"autoOff"`
+	Telegram         *telegram.Config         `toml:"telegram"`
 }
 
 //set this via ldflags (see https://stackoverflow.com/q/11354518)
@@ -182,13 +182,33 @@ func createPIDFile(pidFile []string) {
 func initPlugins(tConfig tomlConfig, mock bool) []soundtouch.Plugin {
 	pl := []soundtouch.Plugin{}
 
-	pl = append(pl, logger.NewLogger(tConfig.Logger))
-	pl = append(pl, episodecollector.NewCollector(tConfig.EpisodeCollector))
-	pl = append(pl, magiczone.NewCollector(tConfig.MagicZone))
-	pl = append(pl, influxconnector.NewLogger(tConfig.InfluxDB))
-	pl = append(pl, volumebutler.NewVolumeButler(tConfig.VolumeButler))
-	pl = append(pl, autooff.NewObserver(tConfig.AutoOff))
-	pl = append(pl, telegram.NewTelegramLogger(tConfig.Telegram))
+	if tConfig.Logger != nil {
+		pl = append(pl, logger.NewLogger(*tConfig.Logger))
+	}
+
+	if tConfig.EpisodeCollector != nil {
+		pl = append(pl, episodecollector.NewCollector(*tConfig.EpisodeCollector))
+	}
+	if tConfig.MagicZone != nil {
+		pl = append(pl, magiczone.NewCollector(*tConfig.MagicZone))
+	}
+
+	if tConfig.InfluxDB != nil {
+		pl = append(pl, influxconnector.NewLogger(*tConfig.InfluxDB))
+	}
+
+	if tConfig.VolumeButler != nil {
+		pl = append(pl, volumebutler.NewVolumeButler(*tConfig.VolumeButler))
+	}
+
+	if tConfig.AutoOff != nil {
+		pl = append(pl, autooff.NewObserver(*tConfig.AutoOff))
+	}
+
+	if tConfig.Telegram != nil {
+		pl = append(pl, telegram.NewTelegramLogger(*tConfig.Telegram))
+	}
+
 	return pl
 }
 
