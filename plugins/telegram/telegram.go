@@ -8,6 +8,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -188,10 +189,10 @@ func (d *Bot) Execute(pluginName string, update soundtouch.Update, speaker sound
 	if !d.IsEnabled() {
 		return
 	}
-	if len(d.IgnoreMessages) > 0 && sliceContains(reflect.TypeOf(update.Value).Name(), d.IgnoreMessages) {
+	if len(d.IgnoreMessages) > 0 && slices.Contains(d.IgnoreMessages, reflect.TypeOf(update.Value).Name()) {
 		return
 	}
-	if len(d.Speakers) > 0 && !sliceContains(speaker.Name(), d.Speakers) {
+	if len(d.Speakers) > 0 && !slices.Contains(d.Speakers, speaker.Name()) {
 		return
 	}
 
@@ -201,13 +202,4 @@ func (d *Bot) Execute(pluginName string, update soundtouch.Update, speaker sound
 		"UpdateMsgType": reflect.TypeOf(update.Value).Name(),
 	})
 	mLogger.Debugf("Executing %v on %v", pluginName, reflect.TypeOf(update.Value).Name())
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }

@@ -6,6 +6,7 @@ import (
 	scribble "github.com/nanobox-io/golang-scribble"
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 )
 
 var name = "EpisodeCollector"
@@ -99,7 +100,7 @@ func (d *Collector) Execute(pluginName string, update soundtouch.Update, speaker
 		return
 	}
 
-	if len(d.Speakers) > 0 && !sliceContains(speaker.Name(), d.Speakers) {
+	if len(d.Speakers) > 0 && !slices.Contains(d.Speakers, speaker.Name()) {
 		// Speaker not handled. Ignoring.
 		return
 	}
@@ -114,20 +115,11 @@ func (d *Collector) Execute(pluginName string, update soundtouch.Update, speaker
 	artist := update.Artist()
 	album := update.Album()
 
-	if !sliceContains(artist, d.Config.Artists) || !update.HasContentItem() {
+	if !slices.Contains(d.Config.Artists, artist) || !update.HasContentItem() {
 		mLogger.Debugf("Ignoring album: %s\n", album)
 		return
 	}
 
 	mLogger.Infof("Found album: %v\n", album)
 	readAlbumDB(d.scribbleDb, album, update)
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }
