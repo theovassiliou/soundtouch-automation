@@ -1,0 +1,34 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+  
+  GO_PACKAGES:
+    sh: go list ./...
+
+tasks:
+  default: 
+    deps: [mod] 
+
+  build-dockerbinary:
+    desc: Build a linux binary for docker inclusion
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o masteringsoundtouch
+    sources:
+      - ./**/*.go
+    generates:
+      - masteringsoundtouch
+  
+  mod:
+    desc: Downloads and tidy Go modules
+    cmds:
+      - go mod download
+      - go mod tidy
+  
+  test:
+    desc: Runs test suite
+    aliases: [t]
+    cmds:
+      - go test {{catLines .GO_PACKAGES}}
