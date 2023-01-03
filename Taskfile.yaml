@@ -7,15 +7,48 @@ vars:
   
   GO_PACKAGES:
     sh: go list ./...
+  GO_FILES:
+    sh:  git ls-files '*.go'
+  
+  # For versioning
+  VERSION:
+    sh: git describe --exact-match --tags 2>/dev/null | echo
+  BRANCH:
+    sh: git rev-parse --abbrev-ref HEAD
+  COMMIT:
+    sh: git rev-parse --short HEAD
+  BUILD: 
+    sh: echo {{now | date "20060102150405"}}
+  LDFLAGS:
+    sh: echo "{{ .LDFLAGS }} -X main.commit={{ .COMMIT }} -X main.build={{ .BUILD }} -X main.branch={{ .BRANCH }} {{if .VERSION}} -X main.version={{.VERSION}} {{end}}"
 
 tasks:
+
   default: 
     deps: [mod] 
 
-  build-dockerbinary:
-    desc: Build a linux binary for docker inclusion
+  dump: 
     cmds:
-      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o masteringsoundtouch
+      - echo {{ .VERSION }}
+      - echo {{ .BRANCH }}
+      - echo {{ .COMMIT }}
+      - echo {{ .LDFLAGS }}
+      - echo {{ .BUILD }}
+
+
+  static:
+    desc: Build a static linux binary typical for docker inclusion
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "{{.LDFLAGS}}" -o masteringsoundtouch-linux
+    sources:
+      - ./**/*.go
+    generates:
+      - masteringsoundtouch-linux
+  
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -ldflags "{{.LDFLAGS}}" -a -o masteringsoundtouch
     sources:
       - ./**/*.go
     generates:
@@ -26,9 +59,22 @@ tasks:
     cmds:
       - go mod download
       - go mod tidy
-  
+
   test:
+    cmds:
+    - go test -short ./...
+
+  test-all:
     desc: Runs test suite
     aliases: [t]
     cmds:
-      - go test {{catLines .GO_PACKAGES}}
+      - go test ./...
+
+  clean:
+    desc: Cleans builds, temp files and folders
+    cmds:
+      - rm -rf dist/
+      - rm -rf tmp/
+      - rm -f masteringsoundtouch
+
+  
