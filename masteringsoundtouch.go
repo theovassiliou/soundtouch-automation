@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -67,16 +67,6 @@ type tomlConfig struct {
 	Telegram         *telegram.Config         `toml:"telegram"`
 }
 
-// set this via ldflags (see https://stackoverflow.com/q/11354518)
-const pVersion = ".3"
-
-// version is the current version number as tagged via git tag 1.0.0 -m 'A message'
-var (
-	version = "1.1" + pVersion + "-src"
-	commit  string
-	branch  string
-)
-
 func main() {
 	defer tearDown()
 
@@ -93,7 +83,7 @@ func main() {
 
 	//parse config
 	opts.New(&conf).
-		Version(FormatFullVersion("masteringsoundtouch", version, branch, commit)).
+		Version(FormatFullVersion("masteringsoundtouch", version, branch, commit, build)).
 		Parse()
 
 	log.SetFormatter(&log.TextFormatter{
@@ -113,7 +103,7 @@ func main() {
 		panic(err)
 	}
 	defer f.Close()
-	buf, err := ioutil.ReadAll(f)
+	buf, err := io.ReadAll(f)
 	if err != nil {
 		panic(err)
 	}
@@ -147,7 +137,7 @@ func main() {
 func printSampleConfig(pl []soundtouch.Plugin) bool {
 	var sampleConfig strings.Builder
 
-	fHeader := fmt.Sprintf(header, FormatFullVersion("masteringsoundtouch", version, branch, commit))
+	fHeader := fmt.Sprintf(header, FormatFullVersion("masteringsoundtouch", version, branch, commit, build))
 	sampleConfig.WriteString(fHeader)
 
 	for _, aPlugin := range pl {
@@ -229,28 +219,4 @@ func tearDown() {
 		return
 	}
 	log.Debugf("File %s successfully deleted", conf.PidFile[0])
-}
-
-// FormatFullVersion formats for a cmdName the version number based on version, branch and commit
-func FormatFullVersion(cmdName, version, branch, commit string) string {
-	var parts = []string{cmdName}
-
-	if version != "" {
-		parts = append(parts, version)
-	} else {
-		parts = append(parts, "unknown")
-	}
-
-	if branch != "" || commit != "" {
-		if branch == "" {
-			branch = "unknown"
-		}
-		if commit == "" {
-			commit = "unknown"
-		}
-		git := fmt.Sprintf("(git: %s %s)", branch, commit)
-		parts = append(parts, git)
-	}
-
-	return strings.Join(parts, " ")
 }
