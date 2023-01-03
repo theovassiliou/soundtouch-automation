@@ -2,9 +2,7 @@
 
 version: '3'
 
-vars:
-  GREETING: Hello, World!
-  
+vars:  
   GO_PACKAGES:
     sh: go list ./...
   GO_FILES:
@@ -25,9 +23,11 @@ vars:
 tasks:
 
   default: 
+    desc: The default task
     deps: [mod] 
 
-  dump: 
+  print-vars:
+    desc: Prints a set of defined variables
     cmds:
       - echo {{ .VERSION }}
       - echo {{ .BRANCH }}
@@ -61,6 +61,7 @@ tasks:
       - go mod tidy
 
   test:
+    desc: Runs the short tests
     cmds:
     - go test -short ./...
 
