@@ -12,7 +12,7 @@ vars:
   
   # For versioning
   VERSION:
-    sh: git describe --exact-match --tags 2>/dev/null | echo
+    sh: git describe --exact-match --tags 2>/dev/null | cat
   BRANCH:
     sh: git rev-parse --abbrev-ref HEAD
   COMMIT:
