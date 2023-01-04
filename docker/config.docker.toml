@@ -1,0 +1,110 @@
+
+# Sountouch Automation Configuration
+#
+# Soundtouch Automation is entirely plugin driven. All functionality is perfomed by 
+# plugins.
+#
+# Plugins must be declared in here to be active.
+# To deactivate a plugin, comment out the name and any variables.
+#
+# Where parameters can be set in the config file, environemnt variables or via command-line flags
+# the order of precedence is as follows: 
+#     defaults < config file < environment variables < command-line flags. 
+
+# Global section contains global, plugin independent parameters
+[global]
+interface="eth0"
+no_of_soundtouch_systems=4
+
+
+## Enabling logger plugin
+[logger]
+
+## speakers for which messages should be logged. If empty, all 
+# speakers = ["Office", "Kitchen"]
+
+## ignore_messages describes the message types to be ignored
+## one or more of "ConnectionStateUpdated", "NowPlaying", "Volume"
+## all if empty
+ignore_messages = ["ConnectionStateUpdated"] 
+
+
+## Enabling the episodeCollector plugin
+[episodeCollector]
+
+## speakers for which episodes should be stores. If empty, all 
+speakers = ["Schrank"]
+
+## For which artists to collect the episodes
+## all if empty
+artists = ["Drei Fragezeichen","John Sinclair"] 
+
+## database contains the directory name for the episodes database
+database = "episode.db"
+
+
+## Enabling the magicZone plugin
+[magicZone]
+
+## ordered list of speakers that should be grouped in zones. All if empty.
+speakers = ["Office", "Kueche", "Badezimmer", "Schrank"]
+
+
+# [influxDB]
+## speakers for which messages should be logged. If empty, all 
+# speakers = ["Office", "Kitchen"]
+
+## log_messages describes the message types to be logged
+## one or more of "ConnectionStateUpdated", "NowPlaying", "Volume"
+## all if empty
+# log_messages = ["ConnectionStateUpdated", "NowPlaying", "Volume"] 
+
+## URL of the InfluxDB
+# influxURL = "http://influxdb:8086"
+
+## Database where to store the events
+# database = "soundtouch"
+#
+## dry_run indicates that the plugin dumps lineporoto for the influxDB conncetion
+## as curl statement. 
+# dry_run = true
+## 
+
+## Enabling the volumeButler plugin
+# [volumeButler]
+
+## speakers for which volumeButler will handle volumes. None if empty. 
+# speakers = ["Office", "Kitchen"]
+
+## For which artists volumes should be handled
+## all if empty
+# artists = ["Drei Frageezeichen","John Sinclair"] 
+
+## database contains the directory name for the episodes database
+# database = "episode.db"
+
+## Enabling the AutoOff plugin
+# [autoOff]
+
+## speakers that trigger an autooff 
+# 	[autoOff.Soundtouch]
+#			thenOff = ["Kueche", "Schrank"]
+#	[autoOff.Schlafzimmer]
+#		thenOff = ["Office"]
+
+
+## Enabling logger plugin
+# [telegram]
+
+## speakers for which messages should be logged. If empty, all 
+# speakers = ["Office", "Kitchen"]
+
+## ignore_messages describes the message types to be ignored
+## one or more of "ConnectionStateUpdated", "NowPlaying", "Volume"
+## all if empty
+# ignore_messages = ["ConnectionStateUpdated"] 
+
+## Telegram API Key
+# apiKey ="x:y"
+# authorizedSenders = ["999999", "888888"]
+

@@ -7,6 +7,9 @@ vars:
     sh: go list ./...
   GO_FILES:
     sh:  git ls-files '*.go'
+
+  CONTAINER_IMAGE: masteringsoundtouch
+
   
   # For versioning
   VERSION:
@@ -35,16 +38,6 @@ tasks:
       - echo {{ .LDFLAGS }}
       - echo {{ .BUILD }}
 
-
-  static:
-    desc: Build a static linux binary typical for docker inclusion
-    cmds:
-      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "{{.LDFLAGS}}" -o masteringsoundtouch-linux
-    sources:
-      - ./**/*.go
-    generates:
-      - masteringsoundtouch-linux
-  
   build:
     desc: Build the binary
     cmds:
@@ -78,4 +71,26 @@ tasks:
       - rm -rf tmp/
       - rm -f masteringsoundtouch
 
-  
+# ########
+# DOCKER tasks
+# ########
+
+  docker:build: 
+    desc: Build the container image
+    deps: [docker:static]
+    cmds:
+      - docker build -t {{.CONTAINER_IMAGE}} -f Dockerfile .
+
+  docker:enter:
+      desc: Enter into the built container
+      cmds:
+        - docker run -it --rm {{.CONTAINER_IMAGE}}
+
+  docker:static:
+    desc: Build a static linux binary typical for docker inclusion
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '{{.LDFLAGS}} -w -s' -o docker/bin/masteringsoundtouch-linux
+    sources:
+      - ./**/*.go
+    generates:
+      - docker/bin/masteringsoundtouch-linux
