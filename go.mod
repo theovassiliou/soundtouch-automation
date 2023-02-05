@@ -6,7 +6,6 @@ replace github.com/theovassiliou/soundtouch-golang => ../soundtouch-golang
 
 require (
 	github.com/gorilla/websocket v1.5.0
-	github.com/gorilla/websocket v1.5.0
 	github.com/influxdata/toml v0.0.0-20180607005434-2a2e3012f7cf
 	github.com/jcelliott/lumber v0.0.0-20160324203708-dd349441af25 // indirect
 	github.com/jpillora/opts v1.2.0
@@ -18,17 +17,16 @@ require (
 	gopkg.in/tucnak/telebot.v2 v2.3.4
 )
 
+require golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9
+
 require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.0.0 // indirect
 	github.com/hashicorp/mdns v1.0.5 // indirect
-	github.com/jcelliott/lumber v0.0.0-20160324203708-dd349441af25 // indirect
 	github.com/miekg/dns v1.1.50 // indirect
-	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/posener/complete v1.2.2-0.20190308074557-af07aa5181b3 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
-	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 )
