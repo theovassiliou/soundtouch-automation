@@ -13,7 +13,7 @@
 
 # Global section contains global, plugin independent parameters
 [global]
-interface="en0"
+interface="eth0"
 no_of_soundtouch_systems=4
 
 

@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 )
 
 var name = "MagicZone"
@@ -79,7 +80,7 @@ func (d *MagicZone) Execute(pluginName string, update soundtouch.Update, speaker
 		return
 	}
 
-	if len(d.Speakers) > 0 && !sliceContains(speaker.Name(), d.Speakers) {
+	if len(d.Speakers) > 0 && !slices.Contains(d.Speakers, speaker.Name()) {
 		return
 	}
 
@@ -152,13 +153,4 @@ func (d *MagicZone) Execute(pluginName string, update soundtouch.Update, speaker
 		return
 	}
 
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }

@@ -1,0 +1,96 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:  
+  GO_PACKAGES:
+    sh: go list ./...
+  GO_FILES:
+    sh:  git ls-files '*.go'
+
+  CONTAINER_IMAGE: masteringsoundtouch
+
+  
+  # For versioning
+  VERSION:
+    sh: git describe --exact-match --tags 2>/dev/null | cat
+  BRANCH:
+    sh: git rev-parse --abbrev-ref HEAD
+  COMMIT:
+    sh: git rev-parse --short HEAD
+  BUILD: 
+    sh: echo {{now | date "20060102150405"}}
+  LDFLAGS:
+    sh: echo "{{ .LDFLAGS }} -X main.commit={{ .COMMIT }} -X main.build={{ .BUILD }} -X main.branch={{ .BRANCH }} {{if .VERSION}} -X main.version={{.VERSION}} {{end}}"
+
+tasks:
+
+  default: 
+    desc: The default task
+    deps: [mod] 
+
+  print-vars:
+    desc: Prints a set of defined variables
+    cmds:
+      - echo {{ .VERSION }}
+      - echo {{ .BRANCH }}
+      - echo {{ .COMMIT }}
+      - echo {{ .LDFLAGS }}
+      - echo {{ .BUILD }}
+
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -ldflags "{{.LDFLAGS}}" -a -o masteringsoundtouch
+    sources:
+      - ./**/*.go
+    generates:
+      - masteringsoundtouch
+  
+  mod:
+    desc: Downloads and tidy Go modules
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  test:
+    desc: Runs the short tests
+    cmds:
+    - go test -short ./...
+
+  test-all:
+    desc: Runs test suite
+    aliases: [t]
+    cmds:
+      - go test ./...
+
+  clean:
+    desc: Cleans builds, temp files and folders
+    cmds:
+      - rm -rf dist/
+      - rm -rf tmp/
+      - rm -f masteringsoundtouch
+
+# ########
+# DOCKER tasks
+# ########
+
+  docker:build: 
+    desc: Build the container image
+    deps: [docker:static]
+    cmds:
+      - docker build -t {{.CONTAINER_IMAGE}} -f Dockerfile .
+
+  docker:enter:
+      desc: Enter into the built container
+      cmds:
+        - docker run -it --rm {{.CONTAINER_IMAGE}}
+
+  docker:static:
+    desc: Build a static linux binary typical for docker inclusion
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '{{.LDFLAGS}} -w -s' -o docker/bin/masteringsoundtouch-linux
+    sources:
+      - ./**/*.go
+    generates:
+      - docker/bin/masteringsoundtouch-linux

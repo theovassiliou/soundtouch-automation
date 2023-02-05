@@ -7,12 +7,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
 // assertSender returns false in case user is not authorized
 func (d *Bot) assertSender(sender *tb.User) bool {
-	return sliceContains(strconv.Itoa(sender.ID), d.Config.AuthorizedSender)
+	return slices.Contains(d.Config.AuthorizedSender, strconv.Itoa(sender.ID))
 }
 
 // /status [speakerName]

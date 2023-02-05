@@ -105,12 +105,3 @@ func (d *AutoOff) Execute(pluginName string, update soundtouch.Update, speaker s
 	}
 
 }
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
-}

@@ -1,9 +1,9 @@
 # Telegram Connector
 
-The telegram connector plugin enables management of the automator via the Telegram messaging systems
+The telegram connector plugin enables the management of the Automator via the Telegram messaging systems
 
-The plugin is enabled by including an `[telegram]` section in your
-configuration-toml file.
+The plugin is enabled by including a `[telegram]` section in your
+configuration toml file.
 
 ```toml
 [telegram]
@@ -22,20 +22,19 @@ authorizedSenders = ["999999", "888888"]
 authKey = "ThisIsAVerySecretKey34abf77&"
 ```
 
-In order to use the telegram plugin usefully you have register your "bot" with Telegram. 
-For this you will need an `apiKey` which you have to provide in the respective field in the config-toml.
+In order to use the telegram plugin usefully you have registered your "bot" with Telegram. For this, you will need an `apiKey` which you have to provide in the respective field in the config-toml.
 
 It is up to you to name and make the bot accessible to you and your authorized contacts. 
 
-While everybody can see the bot in the Telegram world, only `authorizedSenders" will received insights in your Soundtouch systems.
+While everybody can see the bot in the Telegram world, only `authorizedSenders` will receive insights into your Soundtouch systems.
 
-You become an authorized used by either adding your ID in the field `authorizedSenders`. In addition a Telegram member can add himself to the list of authorized users by sending the message (command)
+You become an authorized user by either adding your ID in the field `authorizedSenders`. In addition, a Telegram member can add himself to the list of authorized users by sending the message (command)
 
 `/authorize $authKey$` to the bot. 
 
-`$authKey$`is the key specified in the `authKey`field of the config-toml.
+`authKey$` is the key specified in the `authKey`field of the configuration toml.
 
-Please note that the authorization is not persistant and you have to reauthorize if you restart the automator. 
+Please note that the authorization is not persistent and you have to reauthorize if you restart the Automator. 
 
 The following commands have been implemented so far
 

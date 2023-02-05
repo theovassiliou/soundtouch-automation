@@ -3,3 +3,6 @@ config.toml
 episode.db/*
 soundtouch-master
 .vscode/launch.json
+.task
+masteringsoundtouch
+docker/bin/masteringsoundtouch-linux

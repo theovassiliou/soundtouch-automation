@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 )
 
 var name = "Logger"
@@ -82,10 +83,10 @@ func (d *Logger) IsEnabled() bool { return !d.suspended }
 
 // Execute runs the plugin with the given parameter
 func (d *Logger) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
-	if len(d.IgnoreMessages) > 0 && sliceContains(reflect.TypeOf(update.Value).Name(), d.IgnoreMessages) {
+	if len(d.IgnoreMessages) > 0 && slices.Contains(d.IgnoreMessages, reflect.TypeOf(update.Value).Name()) {
 		return
 	}
-	if len(d.Speakers) > 0 && !sliceContains(speaker.Name(), d.Speakers) {
+	if len(d.Speakers) > 0 && !slices.Contains(d.Speakers, speaker.Name()) {
 		return
 	}
 
@@ -96,13 +97,4 @@ func (d *Logger) Execute(pluginName string, update soundtouch.Update, speaker so
 	})
 	mLogger.Debugln("Executing", pluginName)
 	mLogger.Infof("%v\n", update)
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }
