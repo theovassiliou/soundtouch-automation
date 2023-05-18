@@ -17,7 +17,7 @@ require (
 	gopkg.in/tucnak/telebot.v2 v2.3.4
 )
 
-require golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9
+require golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
 
 require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
