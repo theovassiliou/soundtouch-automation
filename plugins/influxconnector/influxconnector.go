@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 )
 
 var name = "InfluxConnector"
@@ -131,10 +132,10 @@ func (d *InfluxDB) Execute(pluginName string, update soundtouch.Update, speaker 
 	})
 	mLogger.Debugln("Executing", pluginName)
 
-	if len(d.LogMessages) > 0 && !sliceContains(reflect.TypeOf(update.Value).Name(), d.LogMessages) {
+	if len(d.LogMessages) > 0 && !slices.Contains(d.LogMessages, reflect.TypeOf(update.Value).Name()) {
 		return
 	}
-	if len(d.Speakers) > 0 && !sliceContains(speaker.Name(), d.Speakers) {
+	if len(d.Speakers) > 0 && !slices.Contains(d.Speakers, speaker.Name()) {
 		return
 	}
 
@@ -158,13 +159,4 @@ func (d *InfluxDB) Execute(pluginName string, update soundtouch.Update, speaker 
 	} else if v != "" {
 		fmt.Printf("curl -i -XPOST \"%v\" --data-binary '%v'\n", influxDB.WriteURL("write"), v)
 	}
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }
