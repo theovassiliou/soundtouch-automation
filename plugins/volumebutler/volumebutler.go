@@ -7,6 +7,7 @@ import (
 	scribble "github.com/nanobox-io/golang-scribble"
 	log "github.com/sirupsen/logrus"
 	soundtouch "github.com/theovassiliou/soundtouch-golang"
+	"golang.org/x/exp/slices"
 )
 
 var name = "volumeButler"
@@ -109,7 +110,7 @@ func (vb *VolumeButler) Execute(pluginName string, update soundtouch.Update, spe
 	})
 	mLogger.Debugln("Executing", pluginName)
 
-	if len(vb.Speakers) == 0 || !sliceContains(speaker.Name(), vb.Speakers) {
+	if len(vb.Speakers) == 0 || !slices.Contains(vb.Speakers, speaker.Name()) {
 		mLogger.Debugln("Speaker not handled. --> Done!")
 		return
 	}
@@ -122,7 +123,7 @@ func (vb *VolumeButler) Execute(pluginName string, update soundtouch.Update, spe
 	artist := update.Artist()
 	album := update.Album()
 
-	if !sliceContains(artist, vb.Config.Artists) || !update.HasContentItem() {
+	if !slices.Contains(vb.Config.Artists, artist) || !update.HasContentItem() {
 		mLogger.Debugf("Ignoring album %s from %s\n", album, artist)
 		return
 	}
@@ -156,15 +157,6 @@ func (vb *VolumeButler) Execute(pluginName string, update soundtouch.Update, spe
 		mLogger.Infof("writing volume to %v\n", storedAlbum.Volume)
 		vb.scribbleDb.Write(speaker.Name(), album, &storedAlbum)
 	}
-}
-
-func sliceContains(name string, list []string) bool {
-	for _, s := range list {
-		if name == s {
-			return true
-		}
-	}
-	return false
 }
 
 // ScanForVolume listens for Volume updates and returns the latest received Volume, when the
