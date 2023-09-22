@@ -41,8 +41,14 @@ const header = `
 # Global section contains global, plugin independent parameters
 [global]
 interface="en0"
+
+# Will be ignored if static_speakers defined
 no_of_soundtouch_systems=7
 
+# static_speakers=[
+#     "192.168.178.21", 
+#     "192.168.178.32", 
+# ]
 `
 
 type config struct {
@@ -54,8 +60,9 @@ type config struct {
 }
 
 type global struct {
-	Interface             string `opts:"group=Soundtouch" help:"network interface to listen"`
-	NoOfSoundtouchSystems int    `opts:"group=Soundtouch" help:"Number of Soundtouch systems to scan for."`
+	Interface             string   `opts:"group=Soundtouch" help:"network interface to listen"`
+	NoOfSoundtouchSystems int      `opts:"group=Soundtouch" help:"Number of Soundtouch systems to scan for."`
+	StaticSpeakers        []string `opts:"group=Soundtouch" help:"A static list of IPs of speakers to handle. Superseeds NoOfSoundtouchSystems if set."`
 }
 type tomlConfig struct {
 	Global           global
@@ -113,15 +120,18 @@ func main() {
 	if err := toml.Unmarshal(buf, &tConfig); err != nil {
 		panic(err)
 	}
+
 	conf.global.NoOfSoundtouchSystems = tConfig.Global.NoOfSoundtouchSystems
 	conf.global.Interface = tConfig.Global.Interface
+	conf.global.StaticSpeakers = tConfig.Global.StaticSpeakers
 
 	pl := initPlugins(tConfig, false)
 
 	nConf := soundtouch.NetworkConfig{
-		InterfaceName: conf.global.Interface,
-		NoOfSystems:   conf.global.NoOfSoundtouchSystems,
-		Plugins:       pl,
+		InterfaceName:     conf.global.Interface,
+		NoOfSystems:       conf.global.NoOfSoundtouchSystems,
+		StaticIPAddresses: conf.global.StaticSpeakers,
+		Plugins:           pl,
 	}
 
 	if conf.PidFile != nil {
