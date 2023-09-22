@@ -143,7 +143,7 @@ func NewTelegramLogger(config Config) (d *Bot) {
 	b.Handle("/hello", func(m *tb.Message) {
 		b.Send(m.Sender, fmt.Sprintf("Hello %v(%v)!", m.Sender.FirstName, m.Sender.ID), menu)
 	})
-	s, _ := strconv.Atoi(d.Config.AuthorizedSender[0])
+	s, _ := strconv.ParseInt(d.Config.AuthorizedSender[0], 10, 64)
 	user := &tb.User{ID: s}
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		mLogger.Infof("Recevived telegram message: %#v\n", m.Text)

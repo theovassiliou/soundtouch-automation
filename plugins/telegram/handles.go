@@ -13,7 +13,7 @@ import (
 
 // assertSender returns false in case user is not authorized
 func (d *Bot) assertSender(sender *tb.User) bool {
-	return slices.Contains(d.Config.AuthorizedSender, strconv.Itoa(sender.ID))
+	return slices.Contains(d.Config.AuthorizedSender, strconv.FormatInt(sender.ID, 10))
 }
 
 // /status [speakerName]
@@ -83,7 +83,7 @@ func (d *Bot) authorize(m *tb.Message) {
 	text := m.Text
 	authParam := strings.Split(text, " ")
 	if len(authParam) >= 2 && authKey == authParam[1] {
-		d.Config.AuthorizedSender = append(d.Config.AuthorizedSender, strconv.Itoa(m.Sender.ID))
+		d.Config.AuthorizedSender = append(d.Config.AuthorizedSender, strconv.FormatInt(m.Sender.ID, 10))
 		d.bot.Send(m.Sender, "Authorization granted")
 		return
 	} else if len(authParam) < 2 {
