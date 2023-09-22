@@ -32,8 +32,8 @@ func readAlbumDB(sbd *scribble.Driver, album string, updateMsg soundtouch.Update
 
 	storedAlbum := readDB(sbd, album, &dbEntry{})
 
-	if storedAlbum.AlbumName == "" {
-		// no, write this into the database
+	if storedAlbum.AlbumName == "" || storedAlbum.ContentItem.Location != updateMsg.ContentItem().Location {
+		// no, write this into the database or update the Location
 		storedAlbum.AlbumName = album
 		// HYPO: We are in observation window, then the current volume could also
 		// be a good measurement
