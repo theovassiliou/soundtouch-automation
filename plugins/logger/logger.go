@@ -96,5 +96,5 @@ func (d *Logger) Execute(pluginName string, update soundtouch.Update, speaker so
 		"UpdateMsgType": reflect.TypeOf(update.Value).Name(),
 	})
 	mLogger.Debugln("Executing", pluginName)
-	mLogger.Infof("%v\n", update)
+	mLogger.Infof("%#v\n", update)
 }
