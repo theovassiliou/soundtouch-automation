@@ -1,4 +1,4 @@
-package magiczone
+package auxjoin
 
 import (
 	"reflect"
@@ -17,7 +17,7 @@ const sampleConfig = `
 # [auxjoin]
 
 ## ordered list of speakers that can join in zones. All if empty.
-# speakers = ["Office", "Kitchen"]
+# speakers = ["Office", "Kitchen", "Schlafzimmer", "Schrank"]
 
 `
 
@@ -75,6 +75,15 @@ func (d *AuxJoin) Enable() { d.suspended = false }
 func (d *AuxJoin) IsEnabled() bool { return !d.suspended }
 
 // Execute runs the plugin with the given parameter
+// AuxJoin adds the auxed speaker to an existing stream, according to the following rules
+// 1. Look whether there is a zone playing
+// 		If yes, add this speaker to the zone
+//		If no, continue
+// 2. Look wether the is speaker playing a compatible source
+//  	If yes, take the first speaker
+//  		Make the first speaker to master and auxed speaker as slave
+//  	If no, exit
+
 func (d *AuxJoin) Execute(pluginName string, update soundtouch.Update, speaker soundtouch.Speaker) {
 	if !(update.Is("NowPlaying")) {
 		return
@@ -89,68 +98,40 @@ func (d *AuxJoin) Execute(pluginName string, update soundtouch.Update, speaker s
 		"Speaker":       speaker.Name(),
 		"UpdateMsgType": reflect.TypeOf(update.Value).Name(),
 	})
+
 	mLogger.Debugln("Executing", pluginName)
 
 	np := update.Value.(soundtouch.NowPlaying)
-	if !(np.PlayStatus == soundtouch.PlayState) {
-		mLogger.Debugln("PlayStatus != PlayState --> Done!")
+	if !(np.PlayStatus == soundtouch.PlayState && np.Source == soundtouch.Aux) {
+		mLogger.Traceln("PlayStatus != PlayState and not AUX--> Done!")
 		return
 	}
+	mLogger.Traceln("Selected AUX")
+	mLogger.Traceln("Searching for a master")
 
-	mLogger.Debugln("PlayStatus == PlayState --> Continuing")
-
-	if !(np.StreamType == soundtouch.RadioStreaming) {
-		mLogger.Debugln("StreamType != RadioStreaming. --> Done!")
-		return
-	}
-	mLogger.Debugln("StreamType == RadioStreaming --> Continuing")
-	compatibleStreamers := make([]soundtouch.Speaker, 0)
 	for _, aKnownDevice := range soundtouch.GetKnownDevices() {
-		mLogger.Tracef("aKnwonDevice: %s", aKnownDevice.Name())
-		if speaker.DeviceInfo.DeviceID == aKnownDevice.DeviceInfo.DeviceID {
-			continue
-		}
-		snp, _ := aKnownDevice.NowPlaying()
-		if np.Content == snp.Content {
-			mLogger.Debugln("Found other speaker streaming the same content --> Adding & Continuing")
-			compatibleStreamers = append(compatibleStreamers, *aKnownDevice)
+		if aKnownDevice.IsMaster() {
+			newZone := soundtouch.NewZone(*aKnownDevice, speaker)
+			aKnownDevice.AddZoneSlave(newZone)
+			mLogger.Debugf("added %v to master %v\n", speaker.Name(), aKnownDevice.Name())
+			return
 		}
 	}
+	mLogger.Traceln("Haven't found a master. Continuing the search")
 
-	if len(compatibleStreamers) == 0 {
-		mLogger.Debugln("No other speaker found streaming the same content --> Done!")
-		return // as there are no other speakers streaming the same content
-	}
-
-	// 1. Check: Already any zones defined?
-	mLogger.Traceln("Are there already any zones in any compatibleStreamer?")
-	for _, c := range compatibleStreamers {
-		mLogger.Tracef("A compatibleStreamer: %s", c.Name())
-		if c.HasZone() {
-			mLogger.Traceln("Streamer is in a zone")
-			// search for the one server that is indicated as master "zone.master == c.ownDeviceId"
-			zone, _ := c.GetZone()
-			if zone.Master == c.DeviceInfo.DeviceID {
-				mLogger.Traceln("CompatbileStreamer is zoneMaster")
-				if !speaker.IsSpeakerMember(zone.Members) {
-					mLogger.Infof("Adding myself to master %v zone.\n", zone.Master)
-					newZone := soundtouch.NewZone(c, speaker)
-					c.AddZoneSlave(newZone)
-					soundtouch.DumpZones(mLogger, c)
-					mLogger.Debugln("Done!")
-					return
-				}
-			}
+	for _, aKnownDevice := range soundtouch.GetKnownDevices() {
+		np, _ := aKnownDevice.NowPlaying()
+		if np.PlayStatus == soundtouch.PlayState &&
+			(np.Source == soundtouch.LocalInternetRadio ||
+				np.Source == soundtouch.StoredMusic ||
+				np.Source == soundtouch.Spotify ||
+				np.Source == soundtouch.Alexa) {
+			mLogger.Debugf("Found a suitable source %v with %v\n", np.Source, aKnownDevice.Name())
+			newZone := soundtouch.NewZone(*aKnownDevice, speaker)
+			mLogger.Debugf("Creating new zone with %v as master.\n", newZone.Master)
+			aKnownDevice.SetZone(newZone)
+			return
 		}
 	}
-
-	choosenAsNewMaster := compatibleStreamers[0]
-	if !choosenAsNewMaster.HasZone() {
-		newZone := soundtouch.NewZone(choosenAsNewMaster, speaker)
-		mLogger.Infof("Creating new zone with %v as master.\n", newZone.Master)
-		choosenAsNewMaster.SetZone(newZone)
-		soundtouch.DumpZones(mLogger, choosenAsNewMaster)
-		return
-	}
-
+	mLogger.Tracef("AUX on %v no effect as no target to join\n", speaker.Name())
 }

@@ -13,6 +13,7 @@ import (
 
 	"github.com/theovassiliou/soundtouch-golang"
 	"github.com/theovassiliou/soundtouch-master/plugins/autooff"
+	"github.com/theovassiliou/soundtouch-master/plugins/auxjoin"
 	"github.com/theovassiliou/soundtouch-master/plugins/episodecollector"
 	"github.com/theovassiliou/soundtouch-master/plugins/influxconnector"
 	"github.com/theovassiliou/soundtouch-master/plugins/logger"
@@ -65,6 +66,7 @@ type tomlConfig struct {
 	VolumeButler     *volumebutler.Config     `toml:"volumeButler"`
 	AutoOff          *autooff.Config          `toml:"autoOff"`
 	Telegram         *telegram.Config         `toml:"telegram"`
+	AuxJoin          *auxjoin.Config          `toml:"auxjoin"`
 }
 
 func main() {
@@ -201,6 +203,10 @@ func initPlugins(tConfig tomlConfig, mock bool) []soundtouch.Plugin {
 
 	if tConfig.Telegram != nil {
 		pl = append(pl, telegram.NewTelegramLogger(*tConfig.Telegram))
+	}
+
+	if tConfig.AuxJoin != nil {
+		pl = append(pl, auxjoin.NewAuxJoin(*tConfig.AuxJoin))
 	}
 
 	return pl
