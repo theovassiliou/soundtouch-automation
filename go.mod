@@ -17,14 +17,14 @@ require (
 )
 
 require (
-	github.com/hashicorp/errwrap v1.0.0 // indirect
-	github.com/hashicorp/go-multierror v1.0.0 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/mdns v1.0.5 // indirect
 	github.com/jcelliott/lumber v0.0.0-20160324203708-dd349441af25 // indirect
 	github.com/miekg/dns v1.1.56 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
-	github.com/posener/complete v1.2.2-0.20190308074557-af07aa5181b3 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/posener/complete v1.2.3 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
