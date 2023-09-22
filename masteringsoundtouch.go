@@ -11,15 +11,15 @@ import (
 	"github.com/jpillora/opts"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/theovassiliou/soundtouch-automation/plugins/autooff"
+	"github.com/theovassiliou/soundtouch-automation/plugins/auxjoin"
+	"github.com/theovassiliou/soundtouch-automation/plugins/episodecollector"
+	"github.com/theovassiliou/soundtouch-automation/plugins/influxconnector"
+	"github.com/theovassiliou/soundtouch-automation/plugins/logger"
+	"github.com/theovassiliou/soundtouch-automation/plugins/magiczone"
+	"github.com/theovassiliou/soundtouch-automation/plugins/telegram"
+	"github.com/theovassiliou/soundtouch-automation/plugins/volumebutler"
 	"github.com/theovassiliou/soundtouch-golang"
-	"github.com/theovassiliou/soundtouch-master/plugins/autooff"
-	"github.com/theovassiliou/soundtouch-master/plugins/auxjoin"
-	"github.com/theovassiliou/soundtouch-master/plugins/episodecollector"
-	"github.com/theovassiliou/soundtouch-master/plugins/influxconnector"
-	"github.com/theovassiliou/soundtouch-master/plugins/logger"
-	"github.com/theovassiliou/soundtouch-master/plugins/magiczone"
-	"github.com/theovassiliou/soundtouch-master/plugins/telegram"
-	"github.com/theovassiliou/soundtouch-master/plugins/volumebutler"
 )
 
 var conf = config{}
