@@ -1,8 +1,6 @@
-module theovassiliou/soundtouch-automation
+module github.com/theovassiliou/soundtouch-automation
 
 go 1.21.1
-
-replace github.com/theovassiliou/soundtouch-golang => ../soundtouch-golang
 
 require (
 	github.com/gorilla/websocket v1.5.0
@@ -10,7 +8,6 @@ require (
 	github.com/jpillora/opts v1.2.3
 	github.com/nanobox-io/golang-scribble v0.0.0-20190309225732-aa3e7c118975
 	github.com/sirupsen/logrus v1.9.3
-	github.com/theovassiliou/soundtouch-automation v0.0.0-20230922230541-ee5406cd9570
 	github.com/theovassiliou/soundtouch-golang v0.0.0-20230922223507-6ade6af6a754
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	gopkg.in/tucnak/telebot.v2 v2.5.0
