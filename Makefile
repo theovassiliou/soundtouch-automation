@@ -36,11 +36,10 @@ deps:
 
 .PHONY: masteringsoundtouch
 masteringsoundtouch:
-	go build -ldflags "$(LDFLAGS)" ./masteringsoundtouch.go
-
+	go build -ldflags "$(LDFLAGS)" -o masteringsoundtouch ./
 .PHONY: go-install
 go-install:
-	go install -ldflags "-w -s $(LDFLAGS)" ./masteringsoundtouch.go
+	go install -ldflags "-w -s $(LDFLAGS)" -o masteringsoundtouch ./
 
 .PHONY: install
 install: masteringsoundtouch

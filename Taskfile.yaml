@@ -53,6 +53,12 @@ tasks:
       - go mod download
       - go mod tidy
 
+  update:
+    desc: Updates Go modules
+    cmds:
+      - go get -u
+      - go mod tidy
+
   test:
     desc: Runs the short tests
     cmds:

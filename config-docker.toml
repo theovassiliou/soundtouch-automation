@@ -13,7 +13,7 @@
 
 # Global section contains global, plugin independent parameters
 [global]
-interface="en0"
+interface="eth0"
 
 # Will be ignored if static_speakers defined
 no_of_soundtouch_systems=4
@@ -130,4 +130,4 @@ speakers = ["Office", "Kueche", "Badezimmer", "Schrank", "Schlafzimmer", "Prinze
 [auxjoin]
 
 ## ordered list of speakers that can join in zones. All if empty.
-speakers = ["Office", "Kueche", "Badezimmer", "Schrank", "Schlafzimmer", "Prinzessinen"]
+speakers = ["Office", "Kueche", "Badezimmer", "Schrank", "Prinzessinen"]
